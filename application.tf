@@ -73,7 +73,7 @@ export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
 
 kubectl run load-generator --image=busybox --restart=Never -- \
-    sh -c "while true; do wget -q -O- http://<EXTERNAL_IP>; done"
+    sh -c "while true; do wget -q -O- http://34.170.108.157:80; done"
 
 gcloud container clusters describe my-gke-cluster --region us-central1 --format="value(currentNodeCount)"
 
