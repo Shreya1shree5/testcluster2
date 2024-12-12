@@ -1,12 +1,15 @@
-provider "kubernetes" {
-  host                   = google_container_cluster.primary.endpoint
-  cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth.0.cluster_ca_certificate)
-  exec {
-    api_version = "client.authentication.k8s.io/v1"
-    command     = "gke-gcloud-auth-plugin"
-  }
-}
+data "google_client_config" "default" {}
 
+provider "kubernetes" {
+  host                   = "https://${google_container_cluster.default.endpoint}"
+  token                  = data.google_client_config.default.access_token
+  cluster_ca_certificate = base64decode(google_container_cluster.default.master_auth[0].cluster_ca_certificate)
+
+  ignore_annotations = [
+    "^autopilot\\.gke\\.io\\/.*",
+    "^cloud\\.google\\.com\\/.*"
+  ]
+}
 resource "kubernetes_deployment" "nginx" {
   metadata {
     name = "nginx-deployment"
