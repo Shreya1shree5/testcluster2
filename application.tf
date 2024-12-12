@@ -71,3 +71,19 @@ resource "kubernetes_service" "nginx" {
 gcloud components install gke-gcloud-auth-plugin
 export USE_GKE_GCLOUD_AUTH_PLUGIN=True
 
+
+kubectl run load-generator --image=busybox --restart=Never -- \
+    sh -c "while true; do wget -q -O- http://<EXTERNAL_IP>; done"
+
+gcloud container clusters describe my-gke-cluster --region us-central1 --format="value(currentNodeCount)"
+
+kubectl get pods -o wide
+
+gcloud logging read "resource.type=k8s_node AND textPayload:scaling" --limit 10 --format json
+
+kubectl delete pod load-generator
+
+Cluster is scaling up: adding 2 nodes.
+Cluster is scaling down: removing 1 node.
+
+
