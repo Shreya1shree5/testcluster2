@@ -1,7 +1,10 @@
 provider "kubernetes" {
   host                   = google_container_cluster.primary.endpoint
   cluster_ca_certificate = base64decode(google_container_cluster.primary.master_auth.0.cluster_ca_certificate)
-  token                  = google_container_cluster.primary.master_auth.0.token
+  exec {
+    api_version = "client.authentication.k8s.io/v1"
+    command     = "gke-gcloud-auth-plugin"
+  }
 }
 
 resource "kubernetes_deployment" "nginx" {
